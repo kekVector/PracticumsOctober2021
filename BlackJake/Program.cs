@@ -132,7 +132,7 @@ void PrintWinner(string resultOfDuel, int dealerPoint, int playerPoint, int bet)
     if (resultOfDuel == "blackjake")
     {
         Console.WriteLine($"Поздравляю, ЭТО BLACKJACK");
-        Console.WriteLine($"Выигрыш составил {bet}");
+        Console.WriteLine($"Выигрыш составил {Convert.ToInt32(Convert.ToDouble(bet) * (1.5))}");
         CountCash(Convert.ToInt32(Convert.ToDouble(bet) * (1.5)), true);
     }
 }
@@ -172,12 +172,12 @@ void GameInit() //инициализация игры
 
 void PrintGameRulls()//Выводим или не выводим правила
 {
-    Console.WriteLine("Добро пожаловать в игру BlackJake!!!\nДля вызова правил введите <Правила>\nДля продолжение введите что угодно");
+    Console.WriteLine("Добро пожаловать в игру BlackJack!!!\nДля вызова правил введите <ПРАВИЛА>\n(Для продолжения введите что угодно)");
     if (Console.ReadLine().ToLower() == "правила")
     {
         Console.WriteLine($"В этой игре будет использоваться колода из {deck.Length} карт. Вы играете против диллера.\nУ вас в наличии {cash} хренек.");
         Console.WriteLine("В начале хода вы делаете ставку. Диллер раздает вам 2 карты из колоды в открытую и себе 1 карту в открытую и 1 карту в закрытую.");
-        Console.WriteLine("Вы можете использовать команды\n1. <Пас> - тогда ход перейдет к диллеру.\n2. <Добрать> или <Еще> - диллер выдаст вам дополнительную карту");
+        Console.WriteLine($"Вы можете использовать команды\n1. <{String.Join(", ", KeyForStop)}> - тогда ход перейдет к диллеру.\n2. <{String.Join(", ", KeyForPull)}> - диллер выдаст вам дополнительную карту");
         Console.WriteLine("Ценность карт J, Q, K - 10 баллов. А - 1 или 11. Цифры - соотвественно цифрам");
         Console.WriteLine("Если Вы набрали меньшее очков, чем у диллера или набрали больше 21 очка - вы проигрываете");
         Console.WriteLine("В случае, если диллер набрал больше 21 или Вы набрали больше очков, чем у диллера, вы получаете вдвое больше чем поставили.\nУдачи!");
@@ -192,7 +192,7 @@ int requestingNum(string s, int min, int max)//Выводим сообщение
     Console.WriteLine(s);
     string? messageFromUser = Console.ReadLine();
     int EnteredNumber = 0;
-    while (!((int.TryParse(messageFromUser, out EnteredNumber) && (EnteredNumber > min && EnteredNumber < max))))
+    while (!((int.TryParse(messageFromUser, out EnteredNumber) && (EnteredNumber > min && EnteredNumber <= max))))
     {
         if ((int.TryParse(messageFromUser, out EnteredNumber)))
         {
