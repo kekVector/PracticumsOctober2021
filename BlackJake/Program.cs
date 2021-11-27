@@ -2,7 +2,7 @@
 int cash = 1000; //Стартовый запас денег
 //string[] KeyForPlay = new string[] { "добрать", "взять", "стоп", "еще", "пас" };
 string[] KeyForPull = new string[] { "еще", "взять", "добрать" }; //Фразы для того, что вытянуть карту
-string[] KeyForStop = new string[] {  "пас", "стоп", "хватит" }; //Фразы, чтобы остановиться
+string[] KeyForStop = new string[] { "пас", "стоп", "хватит" }; //Фразы, чтобы остановиться
 
 string[] ArraySum(string[] arr1, string[] arr2) //объединяет два массива в 1
 {
@@ -102,7 +102,6 @@ string PointsCompare(int dealer, int player) //выводит победител
     if (player > 21) return "lose";
     if (dealer > 21) return "win";
     if (dealer == player) return "tie";
-    if ((dealer < 21) && (player == 21)) return "blackjake";
     if ((dealer > player)) return "lose";
     if (dealer < player) return "win";
     return "ошибка";
@@ -137,14 +136,16 @@ void PrintWinner(string resultOfDuel, int dealerPoint, int playerPoint, int bet)
     }
 }
 
-string[] dealerHanding(string[] dealer) //Диллер добирает , пока не будет 17 или более
+string[] dealerHanding(string[] dealer, string closeCard) //Диллер добирает , пока не будет 17 или более
 {
-    int sum = 0;
-    do
+    Array.Resize(ref dealer, dealer.Length + 1);
+    dealer[dealer.Length - 1] = closeCard;
+    int sum = Points(dealer);
+    while (sum < 17)
     {
         dealer = Hand(dealer);
         sum = Points(dealer);
-    } while (sum < 17);
+    }
     return dealer;
 }
 
@@ -208,31 +209,54 @@ int requestingNum(string s, int min, int max)//Выводим сообщение
     return EnteredNumber;
 }
 
+bool BJ(string[] player, string[] dealer, int bet)
+{
+    if (Points(player) == 21)
+    {
+        Console.WriteLine("У вас BlackJack!\nОчередь диллера");
+        PrintArray(dealer);        
+        PrintWinner("blackjake", Points(dealer), Points(player), bet);
+        return true;
+    }
+    return false;
+}
+
 bool makeTurn()
 {
     int betplayer = requestingNum($"Сделайте ставку(Вам доступно {cash} хренек)", 0, cash);
     string[] dealerHand = Hand(new string[0]);
+    string dealerCloseCard = cardKeep();
     string[] playerHand = Hand(Hand(new string[0]));
     string answer = string.Empty;
     Console.WriteLine("Рука диллера:");
     PrintArray(dealerHand);
     Console.WriteLine("Ваша рука:");
     PrintArray(playerHand);
-    while (!(Array.Exists(KeyForStop, element => element == answer.ToLower())) && (Points(playerHand) < 22))
+    dealerHand = dealerHanding(dealerHand, dealerCloseCard);
+
+    if (!BJ(playerHand,dealerHand,betplayer))
     {
-        answer = requestString("Ваши действия?", ArraySum(KeyForPull, KeyForStop));
-        if (Array.Exists(KeyForPull, element => element == answer.ToLower()))
+
+        
+        while (!(Array.Exists(KeyForStop, element => element == answer.ToLower())) && (Points(playerHand) < 22))
         {
-            playerHand = Hand(playerHand);
-            Console.WriteLine("Ваша рука:");
-            PrintArray(playerHand);
+            answer = requestString("Ваши действия?", ArraySum(KeyForPull, KeyForStop));
+            if (Array.Exists(KeyForPull, element => element == answer.ToLower()))
+            {
+                playerHand = Hand(playerHand);
+                Console.WriteLine("Ваша рука:");
+                PrintArray(playerHand);
+            }
         }
+
+
+        Console.WriteLine("Очередь диллера");
+        PrintArray(dealerHand);
+        string resultDuel = PointsCompare(Points(dealerHand), Points(playerHand));
+        PrintWinner(resultDuel, Points(dealerHand), Points(playerHand), betplayer);
     }
-    dealerHand = dealerHanding(dealerHand);
-    Console.WriteLine("Очередь диллера");
-    PrintArray(dealerHand);
-    string resultDuel = PointsCompare(Points(dealerHand), Points(playerHand));
-    PrintWinner(resultDuel, Points(dealerHand), Points(playerHand), betplayer);
+    
+
     if (cash > 0)
     {
         answer = requestString("Следующий раунд?", new string[] { "да", "нет" });
