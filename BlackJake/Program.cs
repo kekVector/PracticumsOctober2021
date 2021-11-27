@@ -34,8 +34,8 @@ void ShuffleDeck()//Заполняет и перемешивает колоду
                 "A of Spades", "A of Clubs", "A of Hearts", "A of Diamonds",
 
     };
-    deck = new string[52];
-    int randomizer = new Random().Next(0, 52);
+    deck = new string[deck1.Length];
+    int randomizer = new Random().Next(0, deck1.Length);
     for (int i = 0; i < 52; i++)
     {
         while (deck1[randomizer] == "0")
